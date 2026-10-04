@@ -1,0 +1,35 @@
+*************************** START ****************************
+Chip: ESP32C5
+Download mode: uart
+Start time: 20260118-13:11
+Connect baud: 115200
+Com:COM11
+connecting...
+manufacturer_id: 0x5e
+device_id: 0x4018
+fs:0x100000
+address/file: 8192 D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\bootloader.bin
+address/file: 32768 D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\partitions.bin
+address/file: 65536 D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\esp32_marauder_v1_9_1_20260103_esp32c5devkitc1.bin
+Wrote 20464 bytes (12902 compressed) at 0x00002000 in 0.7 seconds (effective 247.0 kbit/s)...
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.1 seconds (effective 255.3 kbit/s)...
+Wrote 1796656 bytes (1078472 compressed) at 0x00010000 in 17.4 seconds (effective 828.0 kbit/s)...
+File: D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\bootloader.bin
+File  md5: 8ccd77a1fa3f67bc1c994e3519f3c03a
+Flash md5: 8ccd77a1fa3f67bc1c994e3519f3c03a
+Hash of data verified.
+File: D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\partitions.bin
+File  md5: 2ddc2d5f85b2c5288013adbe45d9cb7b
+Flash md5: 2ddc2d5f85b2c5288013adbe45d9cb7b
+Hash of data verified.
+File: D:\Desktop\C5_Download\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\esp32_marauder_v1_9_1_20260103_esp32c5devkitc1.bin
+File  md5: 478297369dbd7ea273115395f8f851dd
+Flash md5: 478297369dbd7ea273115395f8f851dd
+Hash of data verified.
+
+Leaving...
+com closed
+Total use time: 23 s
+Download result: PASS
+*************************** END ****************************
+
