@@ -7,7 +7,7 @@ NIST tutorial and technical evaluation
 - [Recommended folder structure](#Recommended-folder-structure)
 
 
-## Install or Update Firmware
+# Install or Update Firmware
 
 To update the ESP32 Marauder v8 using the microSD card on Ubuntu, the fastest and simplest method is Auto-Update (updating directly from the Marauder menu).
 ## Step 1: Prepare the microSD card on Ubuntu
@@ -28,6 +28,5 @@ To update the ESP32 Marauder v8 using the microSD card on Ubuntu, the fastest an
   - The device will detect the `update.bin` file, automatically begin the flashing process, and display the progress on the screen.
   - Once complete, the Marauder will reboot running the updated version. --- 
 
----
-## Recommended folder structure
+# Recommended folder structure
 
