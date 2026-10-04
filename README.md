@@ -5,6 +5,7 @@ NIST tutorial and technical evaluation
 
 - [Install or Update Firmware](#Install-or-Update-Firmware)
 - [Recommended folder structure](#Recommended-folder-structure)
+- [How to save data from the Marauder v8 menu](#How-to-save-data-from-the-Marauder-v8-menu)
 
 
 # Install or Update Firmware
@@ -30,3 +31,35 @@ To update the ESP32 Marauder v8 using the microSD card on Ubuntu, the fastest an
 
 # Recommended folder structure
 
+Connect the microSD card to your Ubuntu machine and create the following folders at the root of the card (all in lowercase):
+
+```text
+/ (microSD root)
+├── pcap/       -> Stores captured WiFi packets (e.g., WPA/EAPOL handshakes)
+├── wordlists/  -> Stores password dictionaries (.txt) for brute-force attacks
+├── logs/       -> Stores text logs of scans
+└── update.bin  -> (Optional) Firmware for future updates
+
+```
+
+# How to save data from the Marauder v8 menu
+
+Once the formatted card is inserted into the Marauder, the interface will automatically enable SD storage:
+
+* **Capturing packets (Handshakes / PCAP):**
+  - Go to **Sniffer** > **EAPOL** (or **PKE / Handshake**).
+  - When you press **Start**, the `.pcap` file will be written directly to the `/pcap` folder on the SD card.
+  - You can then remove the SD card, insert it into your Ubuntu machine, and open the `.pcap` files with **Wireshark** or analyze them using **aircrack-ng**. * **Saving scan logs:**
+  - When performing a network scan (**Scan** > **AP**) or client scan (**Scan** > **STAs**), the option to save results will create `.txt` files in the `/logs` folder.
+ 
+* **Using dictionaries (Wordlists):**
+  - Copy your password text files (e.g., a custom list or excerpts from *rockyou.txt*) into the `/wordlists` folder.
+  - When running authentication attacks or tests that require a dictionary, the Marauder will be able to read the files directly from that folder.
+ 
+## Checking SD card status on the Marauder
+
+To confirm that the device recognizes the card as active storage:
+
+  - Go to **Device** (or **Settings**).
+  - Select **SD ​​Status** / **SD ​​Info**.
+  - It should display the card size and free space, and confirm that the FAT32 file system is correctly mounted.
