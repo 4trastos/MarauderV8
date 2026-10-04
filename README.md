@@ -20,7 +20,7 @@ Para actualizar el ESP32 Marauder v8 utilizando la tarjeta microSD en Ubuntu, el
 ## Paso 1: Preparar la tarjeta microSD en Ubuntu
   - Introduce la tarjeta microSD en tu ordenador con Ubuntu.
   - Formatea la tarjeta en **FAT32** si no lo está ya (puedes usar la herramienta *Discos / GNOME Disks* o el comando `mkfs.fat -F 32`).
-  - Descomprime el archivo `.zip` descargado ![Descargar v1.12.1](update/http_index.png). Busca en su interior el archivo binario del firmware; normalmente se llama `esp32_marauder_v8.bin` (o un nombre similar con extensión `.bin`).
+  - Descomprime el archivo `.zip` descargado ![Descargar v1.12.1](https://github.com/4trastos/MarauderV8/blob/main/update/V8flash.zip). Busca en su interior el archivo binario del firmware; normalmente se llama `esp32_marauder_v8.bin` (o un nombre similar con extensión `.bin`).
   - **Renombra el archivo `.bin`:** Cambia su nombre a `update.bin` (es fundamental que se llame exactamente así, en minúsculas).
   - Copia el archivo `update.bin` en la **raíz** de la tarjeta microSD (no lo metas dentro de ninguna carpeta).
   - Desmonta y expulsa la tarjeta de forma segura desde Ubuntu.
@@ -84,7 +84,7 @@ To update the ESP32 Marauder v8 using the microSD card on Ubuntu, the fastest an
 ## Step 1: Prepare the microSD card on Ubuntu
   - Insert the microSD card into your Ubuntu computer.
   - Format the card to **FAT32** if it isn't already (you can use the *Disks / GNOME Disks* tool or `mkfs.fat -F 32`).
-  - Unzip the downloaded `.zip` file ![Download v1.12.1](update/http_index.png). Look inside for the firmware binary file; it is usually named `esp32_marauder_v8.bin` (or something similar with a `.bin` extension).
+  - Unzip the downloaded `.zip` file ![Download v1.12.1](https://github.com/4trastos/MarauderV8/blob/main/update/V8flash.zip). Look inside for the firmware binary file; it is usually named `esp32_marauder_v8.bin` (or something similar with a `.bin` extension).
   - **Rename the `.bin` file:** Change its name to `update.bin` (it is crucial that it is named exactly this, in lowercase).
   - Copy the `update.bin` file to the **root** of the microSD card (do not place it inside any folder).
   - Safely unmount and eject the card from Ubuntu.
