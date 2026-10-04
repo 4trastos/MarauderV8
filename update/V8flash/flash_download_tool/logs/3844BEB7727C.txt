@@ -1,35 +1,0 @@
-*************************** START ****************************
-Chip: ESP32C5
-Download mode: uart
-Start time: 20260531-12:49
-Connect baud: 115200
-Com:COM238
-connecting...
-manufacturer_id: 0x5e
-device_id: 0x4018
-fs:0x100200
-address/file: 8192 D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\bootloader.bin
-address/file: 32768 D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\partitions.bin
-address/file: 65536 D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\esp32_marauder_v1_12_1_20260505_v8.bin
-Wrote 20464 bytes (12902 compressed) at 0x00002000 in 0.5 seconds (effective 310.1 kbit/s)...
-Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.1 seconds (effective 359.5 kbit/s)...
-Wrote 1958768 bytes (1165771 compressed) at 0x00010000 in 19.0 seconds (effective 825.5 kbit/s)...
-File: D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\bootloader.bin
-File  md5: 8ccd77a1fa3f67bc1c994e3519f3c03a
-Flash md5: 8ccd77a1fa3f67bc1c994e3519f3c03a
-Hash of data verified.
-File: D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\partitions.bin
-File  md5: 2ddc2d5f85b2c5288013adbe45d9cb7b
-Flash md5: 2ddc2d5f85b2c5288013adbe45d9cb7b
-Hash of data verified.
-File: D:\Users\Administrator\Desktop\V8flash\flash_download_tool\dl_temp\bin_tmp\downloadPanel1\esp32_marauder_v1_12_1_20260505_v8.bin
-File  md5: c100516039548a2ceeb7a5d16a3f77c5
-Flash md5: c100516039548a2ceeb7a5d16a3f77c5
-Hash of data verified.
-
-Leaving...
-com closed
-Total use time: 25 s
-Download result: PASS
-*************************** END ****************************
-
