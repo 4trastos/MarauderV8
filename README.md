@@ -2,10 +2,14 @@
 NIST tutorial and technical evaluation / Tutorial NIST y evaluación técnica
 
 ## Índice:
-- [Instalar o Actualizar el Firmware (Castellano)](#instalar-o-actualizar-el-firmware-castellano)
-- [Estructura de carpetas recomendada (Castellano)](#estructura-de-carpetas-recomendada-castellano)
-- [Cómo guardar datos desde el menú del Marauder v8 (Castellano)](#cómo-guardar-datos-desde-el-menú-del-marauder-v8-castellano)
-- [Wardrive Tracker](#Wardrive-Tracker)
+- [Instalar o Actualizar el Firmware (Castellano)](#instalar-o-actualizar-el-firmware)
+- [Estructura de carpetas recomendada (Castellano)](#estructura-de-carpetas-recomendada)
+- [Cómo guardar datos desde el menú del Marauder v8 (Castellano)](#cómo-guardar-datos-desde-el-menú-del-marauder-v8)
+- [📶 Wifi Captura de paquetes Pcap](#-wifi-captura-de-paquetes-pcap)
+- [¿Cómo saber si tu .pcap sirve? (El Handshake)](#cómo-saber-si-tu-pcap-sirve-el-handshake)
+- [El Diccionario (Wordlist)](#el-diccionario-wordlist)
+- [Lanzar el ataque de comprobación con Aircrack-ng](#lanzar-el-ataque-de-comprobación-con-aircrack-ng)
+- [📡 Wardrive Tracker](#-wardrive-tracker)
 
 ---
 
@@ -47,12 +51,21 @@ Conecta la tarjeta microSD a tu máquina Ubuntu y crea las siguientes carpetas e
 └── update.bin  -> (Opcional) Firmware para futuras actualizaciones
 ```
 
+## Comprobación del estado de la tarjeta SD en el Marauder
+
+Para confirmar que el dispositivo reconoce la tarjeta como almacenamiento activo:
+
+  - Ve a **Device** (o **Settings**).
+  - Selecciona **SD Status** / **SD Info**.
+  - Debería mostrar el tamaño de la tarjeta, el espacio libre y confirmar que el sistema de archivos FAT32 está correctamente montado.
+
+
 # Cómo guardar datos desde el menú del Marauder v8
 
 Una vez introducida la tarjeta formateada en el Marauder, la interfaz habilitará automáticamente el almacenamiento SD:
 
 * **Captura de paquetes (Handshakes / PCAP):**
-  - Ve a **Sniffer** > **EAPOL** (o **PKE / Handshake**).
+  - Ve a **WiFi** > **Sniffers** > **EAPOL/PMKID Scan** (o **PKE / Handshake**).
   - Al pulsar **Start**, el archivo `.pcap` se escribirá directamente en la carpeta `/pcap` de la tarjeta SD.
   - Después puedes extraer la tarjeta SD, introducirla en tu máquina Ubuntu y abrir los archivos `.pcap` con **Wireshark** o analizarlos usando **aircrack-ng**.
 
@@ -63,15 +76,169 @@ Una vez introducida la tarjeta formateada en el Marauder, la interfaz habilitar�
   - Copia tus archivos de texto con contraseñas (por ejemplo, una lista personalizada o fragmentos de *rockyou.txt*) en la carpeta `/wordlists`.
   - Cuando ejecutes ataques de autenticación o pruebas que requieran un diccionario, el Marauder podrá leer los archivos directamente desde esa carpeta.
  
-## Comprobación del estado de la tarjeta SD en el Marauder
+---
 
-Para confirmar que el dispositivo reconoce la tarjeta como almacenamiento activo:
 
-  - Ve a **Device** (o **Settings**).
-  - Selecciona **SD Status** / **SD Info**.
-  - Debería mostrar el tamaño de la tarjeta, el espacio libre y confirmar que el sistema de archivos FAT32 está correctamente montado.
+# 📶 Wifi Captura de paquetes PCAP
 
-# Wardrive Tracker
+Un **archivo PCAP** (abreviatura de *Packet Capture*) es un formato estándar que contiene la grabación de todo el tráfico de datos transmitido a través de una red inalámbrica o de cable durante un periodo de tiempo. Funciona esencialmente como un "registro" o "vídeo" de lo que ha viajado por el aire: direcciones MAC, tramas de gestión y paquetes de datos.
+
+En el contexto de la seguridad Wi-Fi, los archivos PCAP son fundamentales para analizar protocolos de red y entender el funcionamiento de intercambios de autenticación como el **WPA Handshake**.
+
+---
+
+### ¿Qué es un WPA Handshake (4-Way Handshake)?
+
+Cuando un dispositivo (como un teléfono o portátil) se conecta a un router Wi-Fi protegido con WPA2 o WPA3, ambos intercambian **4 mensajes clave** antes de permitir la navegación. Este proceso de 4 pasos se conoce como *4-Way Handshake*.
+
+* **Su función:** Permite que el router y el cliente demuestren que conocen la contraseña correcta y deriven las claves de cifrado temporales para la sesión, **sin enviar la contraseña real por el aire**.
+* **Contenido de la captura:** El archivo PCAP registrado por un sniffer (como la Marauder) guarda esos 4 mensajes. Dentro de ellos viajan números aleatorios (*nonces*) y un código de autenticación (*MIC*).
+
+---
+
+### Análisis defensivo y auditoría con Wireshark en Ubuntu
+
+Para inspeccionar y analizar capturas PCAP en un entorno de laboratorio o auditoría de red propia, se utiliza **Wireshark**.
+
+#### 1. Instalación de Wireshark en Ubuntu
+
+Abre la terminal e instala la herramienta:
+
+```bash
+sudo apt update
+sudo apt install wireshark -y
+
+```
+
+*(Opcional: Durante la instalación, si pregunta si los usuarios no superusuarios deben poder capturar paquetes, selecciona "Sí" y añade tu usuario al grupo `wireshark` con `sudo usermod -aG wireshark $USER`).*
+
+---
+
+#### 2. Inspeccionar la captura PCAP
+
+1. Copia el archivo `.pcap` generado por la tarjeta SD a tu equipo Ubuntu.
+2. Abre el archivo en Wireshark:
+```bash
+wireshark /ruta/a/tu/archivo.pcap
+
+```
+
+3. **Filtros útiles en Wireshark:**
+* Para ver únicamente los paquetes del intercambio de autenticación (*Handshake*), escribe en la barra de filtro superior:
+```text
+eapol
+
+```
+
+* Si deseas ver únicamente las tramas de gestión de una red o cliente específico por su dirección MAC:
+```text
+wlan.addr == XX:XX:XX:XX:XX:XX
+
+```
+
+Si el filtro `eapol` muestra los 4 mensajes (o al menos los pares necesarios 1-2 o 2-3), significa que la captura del Handshake se ha realizado correctamente y está completa para su análisis.
+
+---
+
+# ¿Cómo saber si tu `.pcap` sirve? (El Handshake)
+
+**sí, necesitas que ese PCAP contenga el tráfico del *Handshake* completo** para poder descifrarlo con un diccionario, y **no necesitas ningún archivo adicional**, solo un buen diccionario (`wordlists`).
+
+Un archivo `.pcap` capturado por un sniffer guarda todo el tráfico de radiofrecuencia que escucha. Si en el momento de la captura ningún dispositivo se conectó o reconoció a la red, el archivo solo tendrá tramas vacías y **no servirá**.
+
+Para que un diccionario funcione, el archivo `.pcap` **debe contener obligatoriamente el intercambio de 4 mensajes (*4-Way Handshake*)** entre un cliente y el router.
+
+Puedes comprobarlo rápidamente en tu Ubuntu con `aircrack-ng` (viene en el paquete `aircrack-ng`):
+
+```bash
+sudo apt install aircrack-ng -y
+aircrack-ng xxxxxx.pcap
+
+```
+
+* **Si el resultado muestra una lista de redes y dice *"1 handshake"* (o similar):** ¡Perfecto! Tienes el paquete necesario.
+* **Si dice *"0 handshake"*:** Significa que la captura no cogió la conexión y tendrás que volver a capturar (puedes acelerarlo forzando una desconexión o desautenticación si estás probando con tus propios equipos).
+
+---
+
+# El Diccionario (Wordlist)
+
+Una vez confirmado que tu archivo tiene el Handshake, el siguiente paso es conseguir o crear un diccionario de claves.
+
+Para pruebas en entornos controlados, puedes usar diccionarios comunes como `rockyou.txt` o crear un archivo de texto plano llamado `dictionary.txt` donde cada línea sea una contraseña candidata (incluyendo la real para probar que funciona):
+
+```text
+12345678
+password
+tu_contraseña_real_de_prueba
+87654321
+
+```
+
+### ¿Qué es `rockyou.txt`?
+
+Es el diccionario de contraseñas más famoso y utilizado en auditorías de seguridad y laboratorios de pruebas en todo el mundo. Es un archivo de texto plano que contiene millones de las contraseñas más comunes que la gente suele usar (como `12345678`, `password`, `qwerty`, etc.). En la mayoría de distribuciones enfocadas a ciberseguridad (como Kali Linux) ya viene preinstalado, pero en Ubuntu estándar normalmente hay que descargarlo o crearse uno propio para pruebas controladas.
+
+
+### Cómo crear un diccionario propio de pruebas (Paso a paso)
+
+Para entender cómo funciona y probar si `aircrack-ng` es capaz de descifrar tu clave, lo más rápido y práctico es crear un archivo de texto con un editor y meter unas cuantas palabras de prueba (asegurándote de incluir la contraseña real de tu red de casa entre ellas).
+
+1. **Crear el archivo de texto:** Ubicación en tu proyecto.
+Abre la terminal y crea un archivo llamado `diccionario.txt` dentro de la carpeta `wordlists` que ya tienes creada:
+
+```bash
+nano wordlists/diccionario.txt
+
+```
+
+
+2. **Añadir contraseñas candidatas:** Una por línea.
+Escribe varias palabras o combinaciones de prueba, pulsa Enter después de cada una. Incluye por ejemplo:
+
+```text
+12345678
+password
+tu_contraseña_real_de_casa
+vodafone123
+87654321
+
+```
+
+*(Guarda el archivo en nano pulsando `Ctrl + O`, luego `Enter`, y sal con `Ctrl + X`).*
+
+
+3. **Verificar el archivo creado:** Comprobación rápida.
+Comprueba que el archivo se ha guardado correctamente leyendo su contenido:
+
+```bash
+cat wordlists/diccionario.txt
+
+```
+
+*Verificación:* Deberías ver en pantalla la lista de contraseñas una debajo de otra.
+
+
+---
+
+Una vez que tengas tu `diccionario.txt` listo con la contraseña real metida dentro, ya podemos volver a lanzar el comando de `aircrack-ng` apuntando a él y ver la magia en acción.
+
+---
+
+# Lanzar el ataque de comprobación con Aircrack-ng
+
+Cuando tengas tu archivo `.pcap` con el handshake verificado y tu diccionario listo, el comando en la terminal de Ubuntu para probar si la clave está en la lista es:
+
+```bash
+aircrack-ng -w diccionario.txt -b XX:XX:XX:XX:XX:XX eapol_0.pcap
+
+```
+
+*(Sustituye `XX:XX:XX:XX:XX:XX` por la dirección MAC del router/Access Point que capturaste).*
+
+---
+
+# 📡 Wardrive Tracker
 
 Geolocaliza redes WiFi y dispositivos Bluetooth a partir de un PCAP o de un log wardrive (WigleWifi CSV).
 
