@@ -19,6 +19,16 @@ Cuando un dispositivo (como un teléfono o portátil) se conecta a un router Wi-
 
 ---
 
+## Captura de paquetes (Handshakes / PCAP):
+
+- Ve a **WiFi** > **Sniffers** > **EAPOL/PMKID Scan** (o **PKE / Handshake**).
+- Al pulsar **Start**, el archivo `.pcap` se escribirá directamente en la carpeta `/pcap` de la tarjeta SD.
+
+| |  |  | |
+|:---:|:---:|:---:|:---:|
+| <img src="../img/marauder_01.jpg" width="200"> | <img src="../img/marauder_02.jpg" width="200"> | <img src="../img/marauder_03.jpg" width="200"> | <img src="../img/marauder_04.jpg" width="200"> |
+| Selección de menú | Modo sniffer | EAPOL/PMKID Scan | Capturando paquetes |
+
 ### Análisis defensivo y auditoría con Wireshark en Ubuntu
 
 Para inspeccionar y analizar capturas PCAP en un entorno de laboratorio o auditoría de red propia, se utiliza **Wireshark**.
@@ -37,7 +47,7 @@ sudo apt install wireshark -y
 
 ---
 
-#### 2. Inspeccionar la captura PCAP
+#### 2. Inspeccionar la captura PCAP con Wireshark
 
 1. Copia el archivo `.pcap` generado por la tarjeta SD a tu equipo Ubuntu.
 2. Abre el archivo en Wireshark:

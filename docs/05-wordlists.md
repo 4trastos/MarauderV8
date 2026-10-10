@@ -2,6 +2,12 @@
 
 [Volver al índice](../README.md)
 
+## Contenido:
+
+ - [Descarga directa de rockyou.txt](#opción-1-descarga-directa-la-más-sencilla)
+ - [Usar SecLists (mas completo)](#opción-2-usar-seclists-más-completo)
+ - [Cómo crear un diccionario propio de pruebas (Paso a paso)](#cómo-crear-un-diccionario-propio-de-pruebas-paso-a-paso)
+
 ---
 
 Una vez confirmado que tu archivo tiene el Handshake, el siguiente paso es conseguir o crear un diccionario de claves.
