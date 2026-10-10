@@ -7,7 +7,7 @@
 Geolocaliza redes WiFi y dispositivos Bluetooth a partir de un PCAP o de un log wardrive (WigleWifi CSV).
 
 <p align="center">
-  <img src="../img/geo_tracker.png" alt="Wardrive Tracker" width="900">
+  <img src="../img/geo_tracker.png" alt="Wardrive Tracker" width="1000">
 </p>
 
 Sube una captura PCAP o un log WigleWifi CSV (`.log`/`.csv`/`.txt`, p. ej. ESP32 Marauder) → parseo de tramas 802.11 / BLE → mapa interactivo con panel de detalles, cifrado, fabricante y traza de avistamientos. Sin GPS en la captura, geolocaliza los BSSIDs por bases de datos WiFi públicas con la técnica de geowifi.
