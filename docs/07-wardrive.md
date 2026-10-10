@@ -24,7 +24,7 @@ Sube una captura PCAP o un log WigleWifi CSV (`.log`/`.csv`/`.txt`, p. ej. ESP32
 - [¿Cómo funciona?](#-cómo-funciona)
 - [El GPS y las capturas — importante](#️-el-gps-y-las-capturas--importante)
 - [Geolocalización OSINT con geowifi](#-geolocalización-osint-de-bssids-con-geowifi)
-- [Instalación](#-instalación)
+- [Instalación Wardrive Tracker](08-instalacion-wardrive.md)
 - [Uso](#-uso)
 - [API](#-api)
 - [Uso como librería](#-uso-como-librería)
@@ -113,7 +113,7 @@ python app.py
 
 ---
 
-## 📦 Instalación
+## 📦 Instalación - [Enlace aquí](docs/08-instalacion-wardrive.md)
 
 Requiere **Python 3.11+**.
 
