@@ -5,3 +5,233 @@
 ---
 
 Geolocaliza redes WiFi y dispositivos Bluetooth a partir de un PCAP o de un log wardrive (WigleWifi CSV).
+
+<p align="center">
+  <img src="../img/geo_tracker.png" alt="Wardrive Tracker" width="900">
+</p>
+
+Sube una captura PCAP o un log WigleWifi CSV (`.log`/`.csv`/`.txt`, p. ej. ESP32 Marauder) → parseo de tramas 802.11 / BLE → mapa interactivo con panel de detalles, cifrado, fabricante y traza de avistamientos. Sin GPS en la captura, geolocaliza los BSSIDs por bases de datos WiFi públicas con la técnica de geowifi.
+
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-backend-black?logo=flask&logoColor=white)
+![scapy](https://img.shields.io/badge/scapy-parsing-green)
+![Leaflet](https://img.shields.io/badge/Leaflet-map-brightgreen?logo=leaflet&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+## 📑 Tabla de contenidos
+
+- [Características](#-características)
+- [¿Cómo funciona?](#-cómo-funciona)
+- [El GPS y las capturas — importante](#️-el-gps-y-las-capturas--importante)
+- [Geolocalización OSINT con geowifi](#-geolocalización-osint-de-bssids-con-geowifi)
+- [Instalación](#-instalación)
+- [Uso](#-uso)
+- [API](#-api)
+- [Uso como librería](#-uso-como-librería)
+- [Arquitectura](#️-arquitectura)
+- [Formatos y enlaces de capa](#-formatos-y-enlaces-de-capa-soportados)
+- [Uso legal](#️-uso-legal)
+
+---
+
+## ✨ Características
+
+- 🛜 **Redes WiFi desde tramas beacon / probe response 802.11**: BSSID, SSID (incluye ocultas), canal, fabricante (OUI), RSSI, nº de paquetes y primer/último visto.
+- 📄 **Logs wardrive WigleWifi CSV** (`.log`/`.csv`/`.txt`): formato de exportación de ESP32 Marauder, Kismet, WiGLE… Traen GPS en cada fila, así que geolocalizan directamente sin necesidad de PPI-GPS ni geowifi.
+- 🔐 **Detección de cifrado**: Open · WEP · WPA · WPA2 · WPA3 (por IE RSN y AKM SAE).
+- 🔵 **Dispositivos Bluetooth LE desde anuncios** (ADV_IND, …): BD_ADDR, nombre local (EIR), tipo de PDU, fabricante y RSSI.
+- 🗺️ **Mapa interactivo** (Leaflet, tema oscuro) con marcadores por tipo/cifrado, panel de detalles y traza de avistamientos.
+- 🎛️ **Filtros de mapa**: muestra/oculta WiFi o Bluetooth, filtra por tipo de cifrado (Open/WEP/WPA/WPA2/WPA3) y por texto (nombre, MAC, fabricante), todo aplicado a la vez a la lista y al mapa.
+- 📍 **GPS real desde etiquetas PPI-GPS** (Kismet / airodump con gpsd), ubicando cada dispositivo por un centroide ponderado por RSSI (los pasos más cercanos pesan más) con un radio de incertidumbre dibujado al seleccionar.
+- 📐 **Triangulación por RSSI (opcional)**: multilateración por mínimos cuadrados con elipse de incertidumbre. Solo afina emisores con cobertura 2D real (dar vueltas a la zona); en un recorrido recto declina en vez de inventar un punto.
+- 🌍 **Geolocalización OSINT de BSSIDs con geowifi** (bases WiFi públicas): sitúa redes sin GPS y refina las ya situadas (PCAP o log wardrive) llevándolas a la posición de la base, más cercana al emisor real. Siempre diferenciada de un fix GPS.
+- 🧩 **Pila mínima**: Flask + scapy en el backend, vanilla JS + Leaflet en el frontend. El lector de pcap clásico, el decoder PPI y el cliente de geowifi son Python puro (stdlib), sin dependencias extra.
+
+---
+
+## 🔎 ¿Cómo funciona?
+
+```text
+PCAP  ─▶ lector de registros ─▶ decode por link-type ─▶ extrae campos ─┐
+                                                                       ├─▶ agrega por dispositivo ─▶ JSON ─▶ mapa Leaflet
+log CSV ─▶ WigleWifi CSV ─▶ fila = MAC/SSID/cifrado/RSSI/GPS ──────────┘
+```
+- **PCAP**: cada trama se decodifica según su link-type (PPI, radiotap, 802.11 crudo o BLE LL), se extraen sus campos (BSSID/SSID/canal/cifrado/GPS o BD_ADDR/nombre).
+- **Log WigleWifi CSV**: cada fila ya es un avistamiento con MAC, SSID, AuthMode (→ cifrado), RSSI, canal, timestamp y coordenadas GPS.
+
+En ambos casos se agrega por dispositivo acumulando todos sus avistamientos y estimando su posición con un **centroide ponderado por RSSI** (cada avistamiento pesa `10^(dBm/10)`, así los pasos más cercanos dominan), junto a un radio de incertidumbre. La ruta de subida detecta el formato por la extensión y por el contenido, así que da igual si el log llega como `.log`, `.csv` o `.txt`.
+
+> **Nota**
+>
+> El GPS de un log wardrive es la posición del **escáner** (tu recorrido), no la del emisor: por eso los puntos caen sobre la carretera. El radio de incertidumbre lo comunica; para acercarlos al emisor real usa **geowifi** o la **triangulación por RSSI** (esta última solo si diste vueltas a la zona, no en una recta).
+
+---
+
+## ⚠️ El GPS y las capturas — importante
+
+> **Tip**
+>
+> Esto solo afecta a los **PCAP**. Si subes un log WigleWifi CSV (`.log`/`.csv`/`.txt`), el GPS ya viene en cada fila y todo se sitúa en el mapa directamente, sin nada de lo de abajo.
+
+Una captura PCAP WiFi/BT normal **no contiene coordenadas**. Para geolocalizar con GPS real, la captura debe incluir etiquetas **PPI-GPS** (estándar PPI-GEOLOCATION), que generan las herramientas de wardriving con fuente GPS:
+
+| Herramienta | Cómo |
+|---|---|
+| **Kismet** | con GPS vía `gpsd` → pcap PPI-GPS |
+| **airodump-ng** | con `gpsd` y salida PPI |
+
+Sin PPI-GPS, la app lista igualmente todas las redes y dispositivos (inventario) y te avisa con un banner — pero no puede situarlos en el mapa… a menos que uses la **geolocalización OSINT** ⤵️.
+
+---
+
+## 🌍 Geolocalización OSINT de BSSIDs con geowifi
+
+¿Tu captura no trae GPS? Puedes situar las redes WiFi consultando su BSSID en bases de datos públicas, aplicando la técnica de **geowifi**.
+
+Tras cargar una captura, pulsa **Geolocalizar/refinar BSSIDs (geowifi)**. Se consulta el servicio de localización de Apple (`gs-loc.apple.com`, sin API key); si el BSSID está en la base, se pinta en el mapa. Una sola consulta devuelve el BSSID pedido y sus **vecinos**, que se cachean para resolver varios BSSIDs con menos peticiones.
+
+Funciona en dos escenarios:
+
+1. **Redes sin GPS** (PCAP sin PPI-GPS): les da una posición donde antes no la había.
+2. **Redes ya situadas por GPS** (PPI-GPS o log wardrive): refina el punto, sustituyendo la posición sobre la carretera por la de la base pública —más cercana al emisor real— y conservando el punto original del recorrido para comparar.
+
+Con capturas grandes (miles de redes), la consulta se hace en **streaming** (una sola pasada, para exprimir el caché de vecinos) con **consultas en paralelo** (pool de hilos), una barra de progreso y un botón para detener en cualquier momento: se procesan todas las redes sin recortes y el mapa se va rellenando de forma incremental. Ten en cuenta que muchas MAC no están en las bases públicas (sobre todo las aleatorias, que se omiten). El nº de hilos se ajusta con la variable de entorno `GEOWIFI_WORKERS` (por defecto `10`; rango `1–32`).
+
+> **Importante**
+>
+> Estas ubicaciones son datos **OSINT de un tercero**, NO un fix GPS de tu captura. Se muestran con un marcador hueco a trazos y un aviso en el panel de detalle para no confundirlas con las posiciones GPS.
+
+- 🔒 Es una **acción explícita**: no se lanza al subir la captura, porque envía los BSSIDs capturados a Apple. Se omiten las MACs aleatorias/locales.
+- 🧵 El parseo protobuf de la respuesta de Apple está implementado en **Python puro** (mini-parser propio), sin dependencia de `protobuf`.
+- 🔑 ¿Quieres todas las fuentes de geowifi (Wigle, Google, Combain, WifiDB…) con tus propias API keys? Clona geowifi y exporta `GEOWIFI_DIR` antes de arrancar:
+
+```bash
+export GEOWIFI_DIR=/ruta/al/geowifi   # la app delegará en su CLI (-o json)
+export GEOWIFI_WORKERS=16             # (opcional) hilos concurrentes, 1–32
+python app.py
+```
+
+---
+
+## 📦 Instalación
+
+Requiere **Python 3.11+**.
+
+```bash
+git clone https://github.com/afsh4ck/Wardrive-Tracker.git
+cd wardrive_tracker
+pip install -r requirements.txt
+```
+
+---
+
+## 🚀 Uso
+
+```bash
+python app.py
+# abre http://127.0.0.1:5000
+```
+
+1. Pulsa **Subir captura** (o arrastra el archivo sobre el mapa): PCAP (`.pcap`/`.pcapng`/`.cap`) o log WigleWifi CSV (`.log`/`.csv`/`.txt`).
+2. Explora la lista lateral: pestañas **WiFi / Bluetooth**, buscador por nombre/MAC/fabricante y chips de cifrado (Open/WEP/WPA/WPA2/WPA3) para acotar la vista.
+3. Con los controles del mapa, muestra/oculta WiFi o Bluetooth y activa la **triangulación por RSSI** (si diste vueltas a la zona).
+4. Haz clic en una red/dispositivo o en un marcador para ver sus detalles, traza y radio/elipse de incertidumbre.
+5. Pulsa **Geolocalizar/refinar BSSIDs (geowifi)** para situar redes sin GPS o afinar por OSINT las ya situadas (incluidos los logs WigleWifi).
+
+### ¿No tienes una captura con GPS?
+
+Genera una de ejemplo (redes WiFi + BLE con coordenadas simuladas alrededor de Madrid) y ábrela con el botón **Cargar ejemplo**:
+
+```bash
+python tools/make_sample.py
+```
+
+---
+
+## 🔌 API
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/` | Interfaz web. |
+| `POST` | `/api/upload` | Sube un PCAP o log WigleWifi CSV (`multipart/form-data`, campo `file`) → JSON análisis. |
+| `GET` | `/api/sample` | Análisis de la captura de ejemplo, si existe. |
+| `POST` | `/api/geolocate` | Geolocaliza BSSIDs por geowifi (una tacada). Body: `{"bssids": ["aa:bb:.."]}`. |
+| `POST` | `/api/geolocate_stream` | Igual pero en streaming NDJSON (una línea de progreso por lote); lo usa la UI para miles de redes. |
+
+**Respuesta de `/api/geolocate`:**
+
+```json
+{
+  "located": { "aa:bb:cc:dd:ee:ff": { "lat": 40.4, "lon": -3.7, "accuracy": 40, "module": "apple" } },
+  "queried": 3,
+  "found": 1,
+  "provider": "apple",
+  "errors": []
+}
+```
+
+---
+
+## 🐍 Uso como librería
+
+```python
+from wardrive.parser import analyze_pcap
+
+result = analyze_pcap("captura.pcap")
+print(result["meta"])              # resumen: contadores, bounds, has_gps…
+for ap in result["wifi"]:          # redes WiFi
+    print(ap["addr"], ap["name"], ap["encryption"], ap["location"])
+
+# Logs WigleWifi CSV (ESP32 Marauder, Kismet, WiGLE…) — mismo dict de salida
+from wardrive.wigle import analyze_wigle
+result = analyze_wigle("wardrive.log")
+
+# Geolocalización OSINT de BSSIDs (técnica de geowifi)
+from wardrive.geowifi import locate_bssids
+print(locate_bssids(["aa:bb:cc:dd:ee:ff"]))
+```
+
+---
+
+## 🏗️ Arquitectura
+
+```text
+wardrive_tracker/
+├── app.py                  # Flask: / , /api/upload , /api/sample , /api/geolocate(_stream)
+├── wardrive/
+│   ├── parser.py           # PcapAnalyzer: disección 802.11 + BLE y agregación
+│   ├── wigle.py            # lector de logs WigleWifi CSV (.log/.csv/.txt) con GPS
+│   ├── ppi.py              # lector pcap clásico (sin scapy) + decoder PPI-GPS
+│   ├── geowifi.py          # geolocalización OSINT de BSSIDs (Apple / geowifi CLI),
+│   │                       #   en paralelo y con progreso en streaming
+│   └── oui.py              # lookup de fabricante por OUI
+├── tools/make_sample.py    # generador de captura de ejemplo con GPS
+├── templates/index.html    # interfaz (mapa Leaflet)
+├── static/
+│   ├── js/app.js           # estado, mapa, filtros, triangulación RSSI, detalles
+│   └── css/style.css       # tema oscuro
+└── sample_data/            # captura de ejemplo generada (git-ignored)
+```
+
+**Dos rutas de lectura del PCAP:**
+
+- **pcap clásico** (`ppi.read_classic_pcap`): ruta principal. Soporta PPI (con GPS), radiotap, 802.11 crudo y BLE LL. El GPS solo se lee aquí.
+- **pcapng** (fallback vía scapy): radiotap / 802.11 y BLE sin GPS.
+
+---
+
+## 🧬 Formatos y enlaces de capa soportados
+
+- **Entrada**: `.pcap`, `.pcapng`, `.cap` y logs WigleWifi CSV `.log`, `.csv`, `.txt` (hasta 200 MB).
+- **Link-types (PCAP)**: PPI (`192`), radiotap (`127`), 802.11 crudo (`105`), BLE LL (`251`/`256`).
+- **GPS**: desde capturas PPI clásicas (PPI-GEOLOCATION, tipo `30002`) o desde cualquier fila de un log WigleWifi CSV.
+
+---
+
+## ⚖️ Uso legal
+
+> **Créditos:** este proyecto es de [afsh4ck](https://github.com/afsh4ck/Wardrive-Tracker). Reproducido aquí como referencia técnica dentro de mi guía de auditoría WiFi.
+
+Analiza únicamente capturas propias o para las que tengas autorización explícita (pentest, laboratorio, CTF, investigación). El escaneo, la captura y la geolocalización de redes de terceros pueden ser ilegales según tu jurisdicción. La consulta OSINT de geowifi envía los BSSIDs a servicios de terceros: úsala con conocimiento de causa.
+
+Hecho para **wardriving responsable**. Créditos de la técnica de geolocalización por BSSID a [GONZOsint/geowifi](https://github.com/GONZOsint/geowifi).
