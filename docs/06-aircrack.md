@@ -35,3 +35,16 @@ aircrack-ng -w ~/path/path/worldlist/rockyou.txt -b XX:XX:XX:XX:XX:XX path/path/
   <br>
   <em>Aircrack-ng 1.7  keys tested</em>
 </p>
+
+---
+
+### 🤔 ¿Por qué Aircrack-ng dice "Key not found"?
+
+Es normal. `aircrack-ng` ha probado todas las contraseñas de tu `rockyou.txt` contra el handshake de "ELRouter-DeMiVecino" y ninguna ha coincidido. Esto no significa que el handshake esté mal, simplemente que la contraseña real de tu red **no está en esa lista de diccionario**. El `rockyou.txt` es solo una recopilación de contraseñas filtradas y conocidas, no una lista mágica que lo contiene todo.
+
+### Tu nuevo plan: Hashcat para atacar, Wireshark para usar
+
+Es exactamente el flujo profesional. Hashcat es mucho más rápido probando contraseñas (usa tu GPU) y Wireshark es la herramienta ideal para visualizar el tráfico una vez descifrado.
+
+## 👉 [ACCEDER A LA GUÍA DE HASHCAT](09-hashcat-para-atacar.md)
+

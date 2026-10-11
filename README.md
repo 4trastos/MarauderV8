@@ -11,8 +11,10 @@ NIST tutorial and technical evaluation / Tutorial NIST y evaluación técnica
 - [¿Cómo saber si tu .pcap sirve? (El Handshake)](docs/04-handshake.md)
 - [El Diccionario (Wordlist)](docs/05-wordlists.md)
 - [Lanzar el ataque de comprobación con Aircrack-ng](docs/06-aircrack.md)
+- [Lanzar el ataque Hashcat](docs/09-hashcat-para-atacar.md)
 - [📡 Wardrive Tracker](docs/07-wardrive.md)
 - [Instalación Wardrive Tracker](docs/08-instalacion-wardrive.md)
+- [📡 ESP32 Marauder v8 — Documentación completa](docs/marauder/README.md)
 
 ## 🇬🇧 English Index:
 
