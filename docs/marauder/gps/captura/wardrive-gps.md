@@ -107,4 +107,25 @@ El log CSV se puede analizar con **Wardrive Tracker** (mapa interactivo, filtros
 
 - **Wardrive GPS**: para mapear redes.
 - **GPS Track Log**: para mapear tu recorrido.
-- **GPS Data Log**:
+- **GPS Data Log**: para debug.
+
+---
+
+## ⚠️ Advertencias
+
+- **Legalidad:** el wardriving es legal en muchos países (mapear), pero **atacar** las redes registradas es delito.
+- **Al aire libre:** el GPS necesita visibilidad de satélites.
+- **Tamaño:** el log crece rápido (1 red por segundo). 1 hora = ~1 MB.
+- **Velocidad:** moverte en coche o bici cubre más terreno pero con menos detalle. A pie, más detalle pero menos cobertura.
+- **Batería:** el GPS y el WiFi consumen mucho. Un wardrive largo agota la batería del Marauder en 2-3 horas.
+- **Precisión:** la precisión del GPS depende de la visibilidad de satélites. En zonas urbanas densas, puede ser 10-20 metros.
+
+---
+
+## 🔗 Relacionado
+
+- [Wardrive](../wifi/sniffers/wardrive.md) — versión desde el menú WiFi
+- [WigleWifi Log](wiglewifi-log.md) — formato de exportación
+- [GPS Track Log](gps-track-log.md) — solo el recorrido
+- [Wardrive Tracker](../../07-wardrive.md) — análisis del CSV
+- [WiGLE](https://wigle.net/) — base de datos mundial
