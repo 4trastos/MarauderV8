@@ -125,38 +125,6 @@ Herramientas usadas en el flujo de auditoría:
 
 ---
 
-## 🗂️ Estructura del repositorio
-
-```text
-MarauderV8/
-├── README.md                    ← este archivo
-├── docs/                        ← documentación en castellano
-│   ├── 01-firmware.md
-│   ├── 02-estructura-sd.md
-│   ├── 03-captura-pcap.md
-│   ├── 04-handshake.md
-│   ├── 05-wordlists.md
-│   ├── 06-aircrack.md
-│   ├── 07-wardrive.md
-│   ├── 08-instalacion-wardrive.md
-│   ├── 09-hashcat-para-atacar.md
-│   ├── 10-wireshark.md
-│   ├── en/                      ← documentación en inglés
-│   └── marauder/                ← documentación completa del Marauder
-│       ├── wifi/                ← 63 archivos
-│       ├── bluetooth/           ← 25 archivos
-│       └── gps/                 ← 22 archivos
-├── img/                         ← imágenes del proyecto
-├── logs/                        ← logs generados
-├── pcap/                        ← capturas pcap
-├── update/                      ← firmware del Marauder
-│   └── V8flash.zip
-├── Wifi_audit/                  ← scripts de auditoría
-└── worldlist/                   ← diccionarios
-```
-
----
-
 ## ⚖️ Uso legal
 
 Este repositorio documenta técnicas de **auditoría WiFi** con fines **educativos y de investigación**. Todo el contenido está pensado para usarse en:
@@ -190,4 +158,14 @@ El **wardriving** (registrar redes con GPS) es legal en muchos países siempre q
 
 ## 📄 Licencia
 
-Este proyecto está bajo licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto está bajo licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+## 🙏 Créditos
+
+- **ESP32 Marauder** — proyecto original de [justcallmekoko](https://github.com/justcallmekoko/ESP32Marauder) bajo licencia GPL v3. Esta documentación es independiente y solo describe su uso.
+- **WiGLE** — base de datos mundial de redes WiFi ([wigle.net](https://wigle.net/)).
+- **Hashcat** — herramienta de cracking ([hashcat.net](https://hashcat.net/)).
+- **Wireshark** — analizador de tráfico ([wireshark.org](https://www.wireshark.org/)).
+- **Aircrack-ng** — suite de auditoría WiFi ([aircrack-ng.org](https://www.aircrack-ng.org/)).
