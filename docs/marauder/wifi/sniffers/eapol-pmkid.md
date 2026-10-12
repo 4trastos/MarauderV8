@@ -153,4 +153,3 @@ Si ves `1 handshake`, el pcap es válido.
 - [Guía de conversión a Hashcat](../../../04-handshake.md)
 - [Guía de uso de Hashcat](../../../05-wordlists.md)
 - [Guía de Aircrack-ng](../../../06-aircrack.md)
-
