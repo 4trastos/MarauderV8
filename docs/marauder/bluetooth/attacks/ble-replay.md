@@ -89,4 +89,14 @@ El replay puede combinarse con **BLE Disconnect** para simular un dispositivo co
 
 - **Legalidad:** suplantar un dispositivo ajeno es **delito**.
 - **Detección:** algunos sistemas detectan anuncios duplicados.
-- **Alcance:** limitado (~10-30
+- **Alcance:** limitado (~10-30 metros).
+- **Dependencia:** necesitas haber capturado anuncios antes con **BLE Sniff**.
+- **Ética:** no uses BLE Replay para suplantar dispositivos ajenos.
+
+---
+
+## 🔗 Relacionado
+
+- [BLE Sniff](../sniffers/ble-sniff.md) — captura anuncios BLE
+- [BLE Disconnect](ble-disconnect.md) — desconecta dispositivos
+- [BT Tracker](../sniffers/bt-tracker.md) — rastrea un dispositivo
