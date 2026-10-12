@@ -11,8 +11,8 @@ Guía completa de todas las funciones del **ESP32 Marauder v8**, organizadas por
 | Módulo | Descripción | Estado |
 |---|---|---|
 | [📶 WiFi](wifi/README.md) | Sniffers, scanners, ataques y configuración WiFi | ✅ Documentado |
-| [🔵 Bluetooth](bluetooth/README.md) | Escaneo, sniffing y ataques BLE | ⏳ Pendiente |
-| [🛰️ GPS](gps/README.md) | Wardriving, geolocalización y logs GPS | ⏳ Pendiente |
+| [🔵 Bluetooth](bluetooth/README.md) | Escaneo, sniffing y ataques BLE | ✅ Documentado |
+| [🛰️ GPS](gps/README.md) | Wardriving, geolocalización y logs GPS | ✅ Documentado |
 
 ---
 
@@ -66,8 +66,6 @@ Módulo de geolocalización. Se usa junto con el módulo WiFi para **wardriving*
 **Acceso directo:**
 
 - [📖 Ver índice de GPS](gps/README.md)
-
----
 
 ---
 
