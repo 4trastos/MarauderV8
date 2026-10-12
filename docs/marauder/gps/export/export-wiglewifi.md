@@ -68,4 +68,33 @@ FA:8F:CA:61:05:78,MiFibra-BB6F,[WPA2-PSK-CCMP][ESS],2026-10-11 12:34:56,6,-67,40
 
 WiGLE es la base de datos mundial de redes WiFi. Subir tus logs ayuda a la comunidad.
 
-###
+### 2. Analizar con Wardrive Tracker
+
+El CSV se puede cargar en **Wardrive Tracker** para ver las redes en un mapa.
+
+### 3. Convertir a otros formatos
+
+```bash
+gpsbabel -i wigle -f wigle_20261011_123456.csv -o gpx -F recorrido.gpx
+```
+
+### 4. Documentación
+
+Si necesitas documentar un wardrive, el CSV es el formato estándar.
+
+---
+
+## ⚠️ Advertencias
+
+- **SD obligatoria:** sin SD, no hay dónde guardar.
+- **Formato:** el CSV debe tener el header correcto para ser aceptado.
+- **Privacidad:** los SSIDs y MACs son información sensible. No los compartas sin cuidado.
+
+---
+
+## 🔗 Relacionado
+
+- [WigleWifi Log](../captura/wiglewifi-log.md) — genera el log
+- [Wardrive GPS](../captura/wardrive-gps.md) — captura con GPS
+- [Wardrive Tracker](../../07-wardrive.md) — análisis del CSV
+- [WiGLE](https://wigle.net/) — base de datos mundial
