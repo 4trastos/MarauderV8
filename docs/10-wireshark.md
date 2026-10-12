@@ -1,4 +1,4 @@
-# 📊 Análisis con Wireshark
+# Análisis con Wireshark
 
 [⬅️ Volver al índice](../README.md)
 
@@ -178,4 +178,114 @@ network={
 **Añadir a Wireshark:**
 
 1. **Editar → Preferencias → Protocols → IEEE 802.11 → Decryption keys → Edit**.
-2. Añade nueva
+2. Añade nueva entrada:
+   - **Key type**: `wpa-psk`
+   - **Key**: pega los 64 caracteres hex.
+3. **OK** en todo.
+
+### Verificar que funciona
+
+En la lista de paquetes, busca filtros como:
+
+```text
+dns || http || arp
+```
+
+Si ves protocolos como `DNS`, `TCP`, `HTTP`, `TLS`, `ARP`, `ICMP`, el descifrado ha funcionado. ✅
+
+Si sigues viendo solo `802.11` con "Data" cifrada, el descifrado no ha funcionado. ❌
+
+---
+
+## 🔍 Análisis forense con `tshark`
+
+`tshark` es la versión **CLI** de Wireshark. Perfecta para scripts y análisis automatizado.
+
+### Comandos útiles
+
+```bash
+# Ver todos los paquetes EAPOL
+tshark -r eapol_0.pcap -Y eapol
+
+# Ver beacons con SSID, canal y cifrado
+tshark -r eapol_0.pcap -Y "wlan.fc.type_subtype == 0x08" \
+  -T fields -e wlan.bssid -e wlan.ssid -e wlan_radio.channel
+
+# Contar tramas por tipo
+tshark -r eapol_0.pcap -q -z io,phs
+
+# Ver el detalle de un handshake
+tshark -r eapol_0.pcap -Y eapol -V
+
+# Seguir un flujo TCP (si está descifrado)
+tshark -r eapol_0.pcap -q -z follow,tcp,ascii,0
+```
+
+### Ejemplo: extraer todos los SSIDs del pcap
+
+```bash
+tshark -r eapol_0.pcap -Y "wlan.fc.type_subtype == 0x08" \
+  -T fields -e wlan.ssid | sort -u
+```
+
+### Ejemplo: ver handshakes de una red específica
+
+```bash
+tshark -r eapol_0.pcap -Y "eapol && wlan.addr == FA:8F:CA:61:05:78" -V
+```
+
+---
+
+## Casos de uso
+
+### 1. Analizar el handshake
+
+- **Filtro**: `eapol`
+- **Objetivo**: verificar que los 4 mensajes están presentes.
+- **Qué buscar**: `Replay Counter` con secuencia `1, 1, 2, 2`.
+
+### 2. Identificar redes WPA3
+
+- **Filtro**: `wlan.rsn.akm_suites == 0x000008`
+- **Objetivo**: detectar redes WPA3 (SAE).
+- **Qué buscar**: `SAE (SHA256)` en los beacons.
+
+### 3. Analizar tráfico descifrado
+
+- **Filtro**: `dns || http || arp`
+- **Objetivo**: ver qué hacen los dispositivos.
+- **Qué buscar**: dominios consultados, páginas visitadas, IPs.
+
+### 4. Documentar una captura
+
+- **Filtro**: `eapol || wlan.fc.type_subtype == 0x08`
+- **Objetivo**: crear un informe con las redes y handshakes.
+- **Qué buscar**: SSIDs, BSSIDs, canales, cifrado.
+
+### 5. Detectar deauths
+
+- **Filtro**: `wlan.fc.type_subtype == 0x0c`
+- **Objetivo**: ver si alguien está lanzando deauths.
+- **Qué buscar**: tramas de deauth con `Reason Code 7`.
+
+---
+
+## ⚠️ Advertencias
+
+- **Legalidad:** analizar tráfico de una red ajena sin autorización es **delito**.
+- **WPA3:** Wireshark **no puede descifrar WPA3** con la contraseña. El handshake SAE es diferente.
+- **PMF (802.11w):** las redes con PMF cifran los management frames. Algunos filtros no funcionarán.
+- **Rendimiento:** pcap muy grandes (>100 MB) pueden ralentizar Wireshark. Usa `tshark` para análisis grandes.
+- **Privacidad:** el tráfico descifrado puede contener información personal. No lo compartas.
+
+---
+
+## 🔗 Relacionado
+
+- [¿Cómo saber si tu `.pcap` sirve?](04-handshake.md)
+- [El Diccionario (Wordlist)](05-wordlists.md)
+- [Lanzar el ataque de comprobación con Aircrack-ng](06-aircrack.md)
+- [Lanzar el ataque Hashcat](09-hashcat-para-atacar.md)
+- [Documentación oficial de Wireshark](https://www.wireshark.org/docs/)
+- [Wiki de Wireshark — Filtros](https://wiki.wireshark.org/DisplayFilters)
+- [Wiki de Wireshark — 802.11](https://wiki.wireshark.org/HowToDecrypt802.11)
